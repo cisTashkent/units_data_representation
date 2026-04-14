@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Units & Data Representation — IGCSE CS 0478</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══ RESET ══════════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+/* ══ DESIGN TOKENS ══════════════════════════════════════════════════════════ */
+:root{
+  --ink:    #1a1207;
+  --ink2:   #3d3120;
+  --ink3:   #6b5d48;
+  --cream:  #fdf8f0;
+  --warm:   #f5ede0;
+  --paper:  #fffcf7;
+  --rule:   #e8ddd0;
+
+  --teal:   #0d7377;
+  --teal-l: #e0f4f4;
+  --teal-d: #09565a;
+  --amber:  #c47d0e;
+  --amber-l:#fef3dc;
+  --rose:   #b5424a;
+  --rose-l: #fce8e9;
+  --sage:   #3d7a5f;
+  --sage-l: #e2f4ec;
+  --indigo: #4a5fa8;
+  --ind-l:  #eaedfa;
+
+  --mono: 'DM Mono', monospace;
+  --serif:'Fraunces', Georgia, serif;
+  --sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --r4:4px;--r8:8px;--r12:12px;--r16:16px;
+  --shadow: 0 1px 3px rgba(26,18,7,.08), 0 4px 16px rgba(26,18,7,.06);
+  --shadow-lg: 0 2px 8px rgba(26,18,7,.1), 0 8px 32px rgba(26,18,7,.08);
+}
+
+/* ══ BASE ════════════════════════════════════════════════════════════════════ */
+body{
+  background:var(--cream);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.75;
+  min-height:100vh;
+}
+
+/* ruled-paper texture */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:0;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 27px,
+    rgba(196,168,130,.13) 27px, rgba(196,168,130,.13) 28px
+  );
+  pointer-events:none;
+}
+
+.container{
+  max-width:980px;
+  margin:0 auto;
+  padding:0 24px;
+  position:relative;z-index:1;
+}
+
+/* ══ TYPOGRAPHY ═════════════════════════════════════════════════════════════ */
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.2;}
+h4,h5{font-family:var(--sans);font-weight:600;}
+strong{color:var(--ink2);}
+code,kbd{font-family:var(--mono);font-size:.9em;background:var(--warm);border:1px solid var(--rule);border-radius:4px;padding:1px 5px;}
+
+/* ══ HERO ════════════════════════════════════════════════════════════════════ */
+.hero{
+  padding:56px 0 40px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:start;
+  gap:24px;
+  border-bottom:2px solid var(--ink);
+  margin-bottom:0;
+}
+@media(max-width:640px){.hero{grid-template-columns:1fr;}}
+.hero-eyebrow{
+  font-family:var(--mono);
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--teal);
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.hero-eyebrow::before{content:'';display:block;width:24px;height:2px;background:var(--teal);}
+.hero h1{
+  font-size:clamp(2rem,4.5vw,3rem);
+  font-weight:700;
+  font-style:italic;
+  color:var(--ink);
+  margin-bottom:12px;
+}
+.hero h1 span{font-style:normal;color:var(--teal);}
+.hero-sub{color:var(--ink3);font-size:15px;max-width:480px;}
+.hero-meta{
+  background:var(--ink);
+  color:var(--cream);
+  border-radius:var(--r12);
+  padding:20px 24px;
+  font-family:var(--mono);
+  font-size:12px;
+  line-height:2;
+  min-width:200px;
+  flex-shrink:0;
+}
+.hero-meta b{color:var(--teal);display:block;margin-bottom:4px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;}
+
+/* ══ STUDENT FORM ═══════════════════════════════════════════════════════════ */
+.student-bar{
+  background:var(--warm);
+  border:1.5px solid var(--rule);
+  border-radius:var(--r12);
+  padding:20px 24px;
+  margin:24px 0;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr auto;
+  gap:16px;
+  align-items:end;
+  box-shadow:var(--shadow);
+}
+@media(max-width:640px){.student-bar{grid-template-columns:1fr;}}
+.sfield label{
+  display:block;
+  font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:5px;
+}
+.sfield input{
+  width:100%;
+  background:var(--paper);
+  border:1.5px solid var(--rule);
+  border-radius:var(--r8);
+  padding:9px 12px;
+  font-family:var(--sans);font-size:14px;color:var(--ink);
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.sfield input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,115,119,.12);}
+.save-btn{
+  background:var(--teal);
+  color:#fff;border:none;border-radius:var(--r8);
+  padding:10px 20px;
+  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.07em;
+  cursor:pointer;white-space:nowrap;
+  transition:background .2s,transform .1s;
+}
+.save-btn:hover{background:var(--teal-d);transform:translateY(-1px);}
+
+/* ══ PROGRESS ════════════════════════════════════════════════════════════════ */
+.prog-wrap{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:8px;
+  font-family:var(--mono);font-size:11px;color:var(--ink3);
+}
+.prog-track{flex:1;height:5px;background:var(--rule);border-radius:100px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--sage));border-radius:100px;transition:width .4s ease;}
+
+/* ══ TAB NAVIGATION ═════════════════════════════════════════════════════════ */
+.tab-nav{
+  display:flex;gap:2px;flex-wrap:wrap;
+  border-bottom:2px solid var(--rule);
+  margin-bottom:32px;
+  position:sticky;top:0;z-index:50;
+  background:var(--cream);
+  padding:8px 0 0;
+}
+.tbn{
+  background:transparent;border:none;
+  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;
+  color:var(--ink3);
+  padding:9px 14px;
+  cursor:pointer;border-radius:var(--r8) var(--r8) 0 0;
+  border:1.5px solid transparent;border-bottom:none;
+  transition:all .18s;white-space:nowrap;
+}
+.tbn:hover{color:var(--ink);background:var(--warm);}
+.tbn.on{
+  background:var(--paper);
+  color:var(--teal);
+  border-color:var(--rule);
+  border-bottom:2px solid var(--paper);
+  margin-bottom:-2px;
+  font-weight:600;
+}
+
+/* ══ SECTIONS ════════════════════════════════════════════════════════════════ */
+.sec{display:none;}
+.sec.on{display:block;animation:appear .3s ease both;}
+@keyframes appear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ SECTION HEADER ═════════════════════════════════════════════════════════ */
+.sec-hdr{
+  display:flex;align-items:flex-start;gap:16px;
+  margin-bottom:28px;padding-bottom:16px;
+  border-bottom:1.5px solid var(--rule);
+}
+.sec-num{
+  font-family:var(--serif);font-size:2.5rem;font-weight:700;font-style:italic;
+  color:var(--rule);line-height:1;flex-shrink:0;margin-top:-4px;
+  width:52px;text-align:right;
+}
+.sec-titles .label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:4px;
+}
+.sec-titles h2{font-size:1.6rem;color:var(--ink);}
+.sec-titles p{color:var(--ink3);font-size:13.5px;margin-top:4px;}
+
+/* ══ THEORY CARDS ════════════════════════════════════════════════════════════ */
+.tcard{
+  background:var(--paper);
+  border:1.5px solid var(--rule);
+  border-radius:var(--r12);
+  padding:20px 24px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+.tcard.teal {border-left:4px solid var(--teal);background:var(--teal-l);}
+.tcard.amber{border-left:4px solid var(--amber);background:var(--amber-l);}
+.tcard.rose {border-left:4px solid var(--rose); background:var(--rose-l);}
+.tcard.sage {border-left:4px solid var(--sage); background:var(--sage-l);}
+.tcard.indigo{border-left:4px solid var(--indigo);background:var(--ind-l);}
+.tcard h3{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:10px;
+}
+.tcard.teal  h3{color:var(--teal-d);}
+.tcard.amber h3{color:var(--amber);}
+.tcard.rose  h3{color:var(--rose);}
+.tcard.sage  h3{color:var(--sage);}
+.tcard.indigo h3{color:var(--indigo);}
+.tcard p,.tcard li{font-size:14px;color:var(--ink2);margin-bottom:6px;}
+.tcard ul{padding-left:18px;}
+.formula{
+  font-family:var(--mono);font-size:13px;
+  background:var(--paper);border:1.5px solid var(--rule);
+  border-radius:var(--r8);padding:10px 16px;
+  margin:10px 0;color:var(--ink);
+  display:block;
+}
+
+/* ══ DATA TABLES ═════════════════════════════════════════════════════════════ */
+.dtbl{
+  width:100%;border-collapse:collapse;
+  font-size:13px;margin-bottom:20px;
+  border:1.5px solid var(--rule);border-radius:var(--r8);overflow:hidden;
+}
+.dtbl th{
+  background:var(--ink);color:var(--cream);
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  padding:10px 14px;text-align:left;
+}
+.dtbl td{
+  padding:9px 14px;border-bottom:1px solid var(--rule);
+  color:var(--ink2);
+}
+.dtbl tr:last-child td{border-bottom:none;}
+.dtbl tr:nth-child(even) td{background:var(--warm);}
+.dtbl .hl{color:var(--teal);font-family:var(--mono);font-weight:500;}
+.dtbl .center{text-align:center;}
+
+/* ══ TASK BLOCKS ═════════════════════════════════════════════════════════════ */
+.task{
+  background:var(--paper);
+  border:1.5px solid var(--rule);
+  border-radius:var(--r12);
+  padding:22px 24px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow);
+  position:relative;
+}
+.task::before{
+  content:'';
+  position:absolute;top:0;left:0;bottom:0;width:4px;
+  border-radius:var(--r4) 0 0 var(--r4);
+}
+.task.l1::before{background:var(--sage);}
+.task.l2::before{background:var(--amber);}
+.task.l3::before{background:var(--rose);}
+.task.l4::before{background:var(--indigo);}
+
+.lvl{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 12px;border-radius:100px;margin-bottom:12px;
+}
+.lvl.l1{background:var(--sage-l);color:var(--sage);border:1px solid rgba(61,122,95,.2);}
+.lvl.l2{background:var(--amber-l);color:var(--amber);border:1px solid rgba(196,125,14,.2);}
+.lvl.l3{background:var(--rose-l);color:var(--rose);border:1px solid rgba(181,66,74,.2);}
+.lvl.l4{background:var(--ind-l);color:var(--indigo);border:1px solid rgba(74,95,168,.2);}
+
+.task h4{font-size:15px;color:var(--ink);margin-bottom:6px;}
+.task p{font-size:14px;color:var(--ink3);margin-bottom:14px;}
+.task .hint{
+  font-family:var(--mono);font-size:12px;color:var(--teal-d);
+  background:var(--teal-l);border-radius:var(--r8);padding:8px 12px;
+  margin-bottom:12px;
+}
+
+/* ══ INPUT ELEMENTS ══════════════════════════════════════════════════════════ */
+.ans{
+  width:100%;
+  background:var(--cream);
+  border:1.5px solid var(--rule);
+  border-radius:var(--r8);
+  padding:10px 14px;
+  font-family:var(--sans);font-size:14px;color:var(--ink);
+  outline:none;resize:vertical;min-height:42px;
+  transition:border-color .2s,box-shadow .2s;
+  margin-bottom:10px;
+  display:block;
+}
+.ans:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,115,119,.1);}
+.ans::placeholder{color:#b8a898;}
+.alabel{
+  display:block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:5px;
+}
+
+/* conv table with inputs */
+.ctbl{width:100%;border-collapse:collapse;margin-bottom:16px;border:1.5px solid var(--rule);border-radius:var(--r8);overflow:hidden;}
+.ctbl th{background:var(--ink);color:var(--cream);font-family:var(--mono);font-size:10px;padding:10px 12px;letter-spacing:.06em;text-transform:uppercase;}
+.ctbl td{border:1px solid var(--rule);padding:5px 8px;vertical-align:middle;}
+.ctbl .gv{font-family:var(--mono);font-size:13px;color:var(--teal-d);padding:10px 12px;text-align:center;font-weight:500;}
+.ctbl .example{background:var(--sage-l);}
+.ctbl input{
+  width:100%;height:36px;
+  background:var(--cream);border:1px solid var(--rule);border-radius:6px;
+  color:var(--ink);font-family:var(--mono);font-size:13px;text-align:center;
+  outline:none;padding:4px 8px;transition:all .2s;
+}
+.ctbl input:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 2px rgba(13,115,119,.1);}
+
+/* ══ WORKED EXAMPLE BOX ══════════════════════════════════════════════════════ */
+.worked{
+  background:var(--ink);color:var(--cream);
+  border-radius:var(--r12);padding:20px 24px;margin:16px 0;
+  font-family:var(--mono);font-size:13px;line-height:1.8;
+}
+.worked .step{color:var(--teal);font-weight:500;display:block;margin-top:8px;}
+.worked .result{color:#fbbf24;font-weight:600;font-size:15px;display:block;margin-top:8px;}
+.worked b{color:#f0c97a;}
+
+/* ══ SECTION NAV ═════════════════════════════════════════════════════════════ */
+.secnav{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:36px;padding-top:20px;border-top:1.5px solid var(--rule);
+}
+.navbtn{
+  background:var(--warm);border:1.5px solid var(--rule);
+  color:var(--ink2);border-radius:var(--r8);
+  padding:9px 22px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.05em;
+  cursor:pointer;transition:all .18s;
+}
+.navbtn:hover{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+.navbtn:disabled{opacity:.3;cursor:not-allowed;}
+.navbtn.primary{background:var(--teal);color:#fff;border-color:var(--teal);}
+.navbtn.primary:hover{background:var(--teal-d);}
+.pl{font-family:var(--mono);font-size:11px;color:var(--ink3);}
+
+/* ══ SUBMIT ZONE ═════════════════════════════════════════════════════════════ */
+.submit-zone{
+  background:var(--ink);color:var(--cream);
+  border-radius:var(--r16);padding:40px;margin:40px 0;
+  text-align:center;
+  box-shadow:var(--shadow-lg);
+}
+.submit-zone h2{font-family:var(--serif);font-size:1.8rem;font-style:italic;color:#fff;margin-bottom:10px;}
+.submit-zone p{color:#94a3b8;font-size:14px;margin-bottom:28px;}
+.sbtn{
+  display:inline-flex;align-items:center;gap:10px;
+  border-radius:var(--r8);padding:13px 32px;
+  font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;
+  cursor:pointer;transition:all .2s;margin:5px;border:none;
+}
+.sbtn.main{background:var(--teal);color:#fff;}
+.sbtn.main:hover{background:var(--teal-d);transform:translateY(-2px);box-shadow:0 8px 24px rgba(13,115,119,.35);}
+.sbtn.alt{background:transparent;border:1.5px solid rgba(255,255,255,.2);color:#cbd5e1;}
+.sbtn.alt:hover{background:rgba(255,255,255,.07);}
+
+/* ══ TOAST ═══════════════════════════════════════════════════════════════════ */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--sage);color:#fff;
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  padding:10px 18px;border-radius:var(--r8);
+  opacity:0;transform:translateY(8px);
+  transition:all .25s;z-index:999;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* ══ UNITS BIG TABLE ════════════════════════════════════════════════════════ */
+.big-units{width:100%;border-collapse:collapse;border:1.5px solid var(--rule);border-radius:var(--r8);overflow:hidden;margin-bottom:24px;}
+.big-units th{background:var(--ink);color:var(--cream);font-family:var(--mono);font-size:10px;padding:9px 14px;letter-spacing:.08em;text-transform:uppercase;border-right:1px solid rgba(255,255,255,.08);}
+.big-units td{padding:9px 14px;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);font-size:13px;color:var(--ink2);}
+.big-units tr:last-child td{border-bottom:none;}
+.big-units .prefix-row td:first-child{font-family:var(--mono);font-weight:500;color:var(--teal-d);}
+.big-units .si{background:var(--teal-l);}
+.big-units .iec{background:var(--amber-l);}
+.big-units tr.group-head td{background:var(--warm);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);font-weight:600;}
+
+/* image/sound diagram */
+.diagram{
+  display:grid;grid-template-columns:repeat(8,1fr);gap:3px;
+  margin:12px 0;
+}
+.px{
+  aspect-ratio:1;border-radius:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:9px;color:var(--ink3);
+}
+
+.wave-wrap{height:80px;background:var(--cream);border:1.5px solid var(--rule);border-radius:var(--r8);overflow:hidden;margin:10px 0;position:relative;}
+.wave-wrap svg{width:100%;height:100%;}
+
+/* colour palette demo */
+.pal-demo{display:flex;gap:4px;flex-wrap:wrap;margin:10px 0;}
+.pc{width:36px;height:36px;border-radius:6px;border:1.5px solid var(--rule);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;}
+
+/* mark scheme reveal */
+.mark-scheme{
+  background:var(--sage-l);border:1.5px solid rgba(61,122,95,.25);
+  border-radius:var(--r8);padding:10px 16px;margin-top:8px;
+  font-family:var(--mono);font-size:12px;color:var(--sage);
+  display:none;
+}
+.mark-scheme.show{display:block;}
+.reveal-btn{
+  background:transparent;border:1.5px solid var(--rule);
+  border-radius:var(--r8);padding:6px 16px;
+  font-family:var(--mono);font-size:11px;color:var(--ink3);
+  cursor:pointer;margin-top:6px;transition:all .18s;
+}
+.reveal-btn:hover{background:var(--sage-l);color:var(--sage);border-color:rgba(61,122,95,.3);}
+
+hr.divider{border:none;border-top:1.5px solid var(--rule);margin:24px 0;}
+.mt12{margin-top:12px;} .mb8{margin-bottom:8px;} .mt20{margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ══ HERO ══════════════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <div>
+    <div class="hero-eyebrow">Cambridge IGCSE Computer Science 0478 · Year 10</div>
+    <h1>Units, Storage &<br><span>Data Representation</span></h1>
+    <p class="hero-sub">Bits, bytes, prefixes — and how computers encode text, images and sound.</p>
+  </div>
+  <div class="hero-meta">
+    <b>Topics</b>
+    Storage Units<br>
+    Text Encoding<br>
+    Image Representation<br>
+    Sound Digitisation<br>
+    <b style="margin-top:12px">Level</b>
+    Y10 · IGCSE 0478
+  </div>
+</div>
+
+<!-- ══ STUDENT FORM ═══════════════════════════════════════════════════════════ -->
+<div class="student-bar">
+  <div class="sfield"><label>Full Name</label><input type="text" id="s-name" placeholder="Your full name"></div>
+  <div class="sfield"><label>Class</label><input type="text" id="s-class" placeholder="e.g. 10A"></div>
+  <div class="sfield"><label>Date</label><input type="date" id="s-date"></div>
+  <button class="save-btn" onclick="saveAll();showToast('Progress saved ✓')">Save Progress</button>
+</div>
+
+<!-- ══ PROGRESS ════════════════════════════════════════════════════════════════ -->
+<div class="prog-wrap">
+  <span id="prog-label">Section 1 / 6</span>
+  <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:16.7%"></div></div>
+</div>
+
+<!-- ══ TAB NAV ═════════════════════════════════════════════════════════════════ -->
+<nav class="tab-nav" id="tab-nav">
+  <button class="tbn on" onclick="goTo(0)">§1 Units</button>
+  <button class="tbn" onclick="goTo(1)">§2 Converting Units</button>
+  <button class="tbn" onclick="goTo(2)">§3 Text</button>
+  <button class="tbn" onclick="goTo(3)">§4 Images</button>
+  <button class="tbn" onclick="goTo(4)">§5 Sound</button>
+  <button class="tbn" onclick="goTo(5)">§6 Revision</button>
+</nav>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+  SECTION 1 — UNITS OF STORAGE
+═════════════════════════════════════════════════════════════════════════════ -->
+<div class="sec on" id="sec-0">
+  <div class="sec-hdr">
+    <div class="sec-num">01</div>
+    <div class="sec-titles">
+      <div class="label">Theory</div>
+      <h2>Units of Digital Storage</h2>
+      <p>Understanding bits, bytes, and the SI and IEC prefix families</p>
+    </div>
+  </div>
+
+  <div class="tcard teal">
+    <h3>📐 The Fundamental Units</h3>
+    <p>All digital data is stored as binary digits. The two foundational units are:</p>
+    <p><strong>Bit (b)</strong> — the smallest unit of data. A single binary digit: either 0 or 1. A bit represents one of two states (off/on, false/true).</p>
+    <p><strong>Byte (B)</strong> — 8 bits grouped together. One byte can represent 2⁸ = 256 different values (0–255). A single character in basic ASCII encoding takes 1 byte.</p>
+    <span class="formula">1 Byte = 8 bits &nbsp;|&nbsp; 1 Nibble = 4 bits = ½ Byte</span>
+  </div>
+
+  <div class="tcard amber">
+    <h3>⚠️ Two Prefix Systems — SI vs IEC</h3>
+    <p>There are TWO systems of prefixes used with storage units. This causes confusion — you must know both!</p>
+    <p><strong>SI (decimal) prefixes</strong> — based on powers of <strong>10</strong>. Used in marketing (hard drive manufacturers use these — that's why drives appear smaller than advertised!).</p>
+    <p><strong>IEC (binary) prefixes</strong> — based on powers of <strong>2</strong>. Used in operating systems and computing. Identified by the extra "<strong>i</strong>" (e.g. Kibibyte, Mebibyte).</p>
+    <span class="formula">SI:  1 KB = 1 000 bytes (10³)&nbsp;&nbsp;&nbsp; 1 MB = 1 000 000 bytes (10⁶)</span>
+    <span class="formula">IEC: 1 KiB = 1 024 bytes (2¹⁰)&nbsp;&nbsp; 1 MiB = 1 048 576 bytes (2²⁰)</span>
+  </div>
+
+  <!-- THE BIG TABLE -->
+  <h3 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:14px;margin-top:4px;">Complete Prefix Reference Table</h3>
+  <table class="big-units">
+    <thead>
+      <tr>
+        <th>Prefix</th><th>Symbol</th><th>Standard Name</th><th>Value</th><th>Bytes (exact)</th><th>System</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="group-head"><td colspan="6">── Small Units ──</td></tr>
+      <tr><td class="hl">—</td><td>b</td><td>Bit</td><td>—</td><td>⅛ byte</td><td>Both</td></tr>
+      <tr><td class="hl">—</td><td>B</td><td>Byte</td><td>8 bits</td><td>1</td><td>Both</td></tr>
+      <tr><td class="hl">—</td><td>—</td><td>Nibble</td><td>4 bits</td><td>½</td><td>Both</td></tr>
+
+      <tr class="group-head"><td colspan="6">── Kilo / Kibi ──</td></tr>
+      <tr class="si"><td class="hl">Kilo-</td><td>KB</td><td>Kilobyte</td><td>10³</td><td class="hl">1 000</td><td>SI / Decimal</td></tr>
+      <tr class="iec"><td class="hl">Kibi-</td><td>KiB</td><td>Kibibyte</td><td>2¹⁰</td><td class="hl">1 024</td><td>IEC / Binary</td></tr>
+
+      <tr class="group-head"><td colspan="6">── Mega / Mebi ──</td></tr>
+      <tr class="si"><td class="hl">Mega-</td><td>MB</td><td>Megabyte</td><td>10⁶</td><td class="hl">1 000 000</td><td>SI / Decimal</td></tr>
+      <tr class="iec"><td class="hl">Mebi-</td><td>MiB</td><td>Mebibyte</td><td>2²⁰</td><td class="hl">1 048 576</td><td>IEC / Binary</td></tr>
+
+      <tr class="group-head"><td colspan="6">── Giga / Gibi ──</td></tr>
+      <tr class="si"><td class="hl">Giga-</td><td>GB</td><td>Gigabyte</td><td>10⁹</td><td class="hl">1 000 000 000</td><td>SI / Decimal</td></tr>
+      <tr class="iec"><td class="hl">Gibi-</td><td>GiB</td><td>Gibibyte</td><td>2³⁰</td><td class="hl">1 073 741 824</td><td>IEC / Binary</td></tr>
+
+      <tr class="group-head"><td colspan="6">── Tera / Tebi ──</td></tr>
+      <tr class="si"><td class="hl">Tera-</td><td>TB</td><td>Terabyte</td><td>10¹²</td><td class="hl">1 000 000 000 000</td><td>SI / Decimal</td></tr>
+      <tr class="iec"><td class="hl">Tebi-</td><td>TiB</td><td>Tebibyte</td><td>2⁴⁰</td><td class="hl">1 099 511 627 776</td><td>IEC / Binary</td></tr>
+
+      <tr class="group-head"><td colspan="6">── Peta / Pebi ──</td></tr>
+      <tr class="si"><td class="hl">Peta-</td><td>PB</td><td>Petabyte</td><td>10¹⁵</td><td class="hl">10¹⁵</td><td>SI / Decimal</td></tr>
+      <tr class="iec"><td class="hl">Pebi-</td><td>PiB</td><td>Pebibyte</td><td>2⁵⁰</td><td class="hl">2⁵⁰</td><td>IEC / Binary</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tcard sage">
+    <h3>💡 Memory Trick</h3>
+    <ul>
+      <li><strong>SI</strong> (decimal, powers of 10): <strong>K</strong>ilo, <strong>M</strong>ega, <strong>G</strong>iga, <strong>T</strong>era — "King Midas Got Treasure"</li>
+      <li><strong>IEC</strong> (binary, powers of 2): <strong>Ki</strong>bi, <strong>Mi</strong>bi, <strong>Gi</strong>bi, <strong>Ti</strong>bi — same words but with the "<strong>i</strong>" to show binary</li>
+      <li>For IGCSE, you often see <strong>KB used to mean 1024 bytes</strong> (the old informal use). Always check the context!</li>
+    </ul>
+    <span class="formula">Binary steps: × 1024 each time&nbsp; (2¹⁰ = 1024)</span>
+    <span class="formula">Decimal steps: × 1000 each time&nbsp; (10³ = 1000)</span>
+  </div>
+
+  <!-- Quick-check tasks -->
+  <hr class="divider">
+  <div class="task l1">
+    <div class="lvl l1">⭐ Level 1 — Foundation</div>
+    <h4>Task 1 — Units Vocabulary</h4>
+    <p>Answer these questions using the theory above.</p>
+    <label class="alabel">1. How many bits are in one byte?</label>
+    <input class="ans" id="u1_1" placeholder="Answer...">
+    <label class="alabel">2. What does the "i" stand for in KiB (Kibibyte)?</label>
+    <input class="ans" id="u1_2" placeholder="Answer...">
+    <label class="alabel">3. Which prefix family (SI or IEC) is based on powers of 2?</label>
+    <input class="ans" id="u1_3" placeholder="Answer...">
+    <label class="alabel">4. How many bytes in 1 KiB? And in 1 KB?</label>
+    <input class="ans" id="u1_4" placeholder="1 KiB = ... bytes,  1 KB = ... bytes">
+    <label class="alabel">5. Why do hard drive manufacturers use SI (decimal) units?</label>
+    <textarea class="ans" id="u1_5" rows="3" placeholder="Because..."></textarea>
+  </div>
+
+  <div class="task l2">
+    <div class="lvl l2">⭐⭐ Level 2 — Developing</div>
+    <h4>Task 2 — Ordering and Comparing</h4>
+    <p>Arrange these storage amounts in order from <strong>smallest to largest</strong>.</p>
+    <div class="tcard" style="background:var(--warm);margin-bottom:12px">
+      <p style="font-family:var(--mono);font-size:13px;text-align:center">1 GiB &nbsp;·&nbsp; 1 500 MiB &nbsp;·&nbsp; 500 KiB &nbsp;·&nbsp; 2 TiB &nbsp;·&nbsp; 800 MB &nbsp;·&nbsp; 1 024 KiB</p>
+    </div>
+    <label class="alabel">Order (smallest → largest):</label>
+    <textarea class="ans" id="u2_1" rows="3" placeholder="1. ..., 2. ..., 3. ..."></textarea>
+    <label class="alabel">A song file is labelled as 4 MB by the app, but the OS shows it as 3.81 MiB. Explain why these numbers differ.</label>
+    <textarea class="ans" id="u2_2" rows="3"></textarea>
+  </div>
+
+  <div class="task l3">
+    <div class="lvl l3">⭐⭐⭐ Level 3 — Secure</div>
+    <h4>Task 3 — Bit and Byte Calculations</h4>
+    <label class="alabel">1. A network transmits data at 8 Mbps (megabits per second). How many MiB of data is transferred in 10 seconds? Show working.</label>
+    <textarea class="ans" id="u3_1" rows="4" placeholder="Working: ..."></textarea>
+    <label class="alabel">2. A file is 3.5 GiB. How many bytes is this exactly? Give your answer in standard form.</label>
+    <textarea class="ans" id="u3_2" rows="3" placeholder="3.5 × 2³⁰ = ..."></textarea>
+    <label class="alabel">3. A hard drive is advertised as 1 TB. An OS reports its capacity in GiB. Approximately how many GiB will the OS show? (Use: 1 TB = 10¹² bytes, 1 GiB = 2³⁰ bytes)</label>
+    <textarea class="ans" id="u3_3" rows="4" placeholder="Working: 10¹² ÷ 2³⁰ ≈ ..."></textarea>
+  </div>
+
+  <div class="secnav">
+    <button class="navbtn" disabled>← Back</button>
+    <span class="pl">Section 1 of 6</span>
+    <button class="navbtn primary" onclick="goTo(1)">Converting Units →</button>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+  SECTION 2 — CONVERTING UNITS
+═════════════════════════════════════════════════════════════════════════════ -->
+<div class="sec" id="sec-1">
+  <div class="sec-hdr">
+    <div class="sec-num">02</div>
+    <div class="sec-titles">
+      <div class="label">Theory + Tasks</div>
+      <h2>Converting Between Units</h2>
+      <p>Multiplying and dividing through the binary and decimal prefix ladders</p>
+    </div>
+  </div>
+
+  <div class="tcard teal">
+    <h3>📐 The Conversion Rules</h3>
+    <p>In the <strong>IEC binary system</strong> each step up is ×1024 and each step down is ÷1024:</p>
+    <span class="formula">bits ×8→ bytes ×1024→ KiB ×1024→ MiB ×1024→ GiB ×1024→ TiB</span>
+    <span class="formula">TiB ÷1024→ GiB ÷1024→ MiB ÷1024→ KiB ÷1024→ bytes ÷8→ bits</span>
+    <p style="margin-top:10px">In the <strong>SI decimal system</strong> each step is ×1000:</p>
+    <span class="formula">bytes ×1000→ KB ×1000→ MB ×1000→ GB ×1000→ TB</span>
+  </div>
+
+  <div class="worked">
+    <b>Worked Example 1:</b> Convert 5 MiB to bytes
+    <span class="step">Step 1: 5 MiB × 1024 = 5120 KiB</span>
+    <span class="step">Step 2: 5120 KiB × 1024 = 5 242 880 bytes</span>
+    <span class="result">Answer: 5 MiB = 5 242 880 bytes</span>
+    <span class="step" style="margin-top:16px">Shortcut: 5 × 2²⁰ = 5 × 1 048 576 = 5 242 880 bytes ✓</span>
+  </div>
+
+  <div class="worked">
+    <b>Worked Example 2:</b> Convert 12 288 bytes to KiB
+    <span class="step">12 288 ÷ 1024 = 12 KiB</span>
+    <span class="result">Answer: 12 288 bytes = 12 KiB</span>
+  </div>
+
+  <div class="worked">
+    <b>Worked Example 3:</b> Convert 2.5 GiB to MiB
+    <span class="step">2.5 × 1024 = 2560 MiB</span>
+    <span class="result">Answer: 2.5 GiB = 2560 MiB</span>
+  </div>
+
+  <hr class="divider">
+
+  <div class="task l1">
+    <div class="lvl l1">⭐ Level 1 — Foundation</div>
+    <h4>Task 1 — Simple Unit Conversions</h4>
+    <p>Convert each value. Show your working (×1024 or ÷1024).</p>
+    <table class="ctbl">
+      <thead><tr><th>Given</th><th>Convert to</th><th>Your Answer</th><th>Working</th></tr></thead>
+      <tbody>
+        <tr class="example"><td class="gv">4 KiB</td><td class="gv">bytes</td><td class="gv" style="color:var(--sage)">4 096 bytes</td><td class="gv" style="color:var(--ink3);font-size:11px">4 × 1024 = 4096</td></tr>
+        <tr><td class="gv">8 KiB</td><td class="gv">bytes</td><td><input id="cv1" placeholder="bytes"></td><td><input id="cv1w" placeholder="working"></td></tr>
+        <tr><td class="gv">2 MiB</td><td class="gv">KiB</td><td><input id="cv2" placeholder="KiB"></td><td><input id="cv2w" placeholder="working"></td></tr>
+        <tr><td class="gv">3 GiB</td><td class="gv">MiB</td><td><input id="cv3" placeholder="MiB"></td><td><input id="cv3w" placeholder="working"></td></tr>
+        <tr><td class="gv">2048 bytes</td><td class="gv">KiB</td><td><input id="cv4" placeholder="KiB"></td><td><input id="cv4w" placeholder="working"></td></tr>
+        <tr><td class="gv">5120 KiB</td><td class="gv">MiB</td><td><input id="cv5" placeholder="MiB"></td><td><input id="cv5w" placeholder="working"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="task l2">
+    <div class="lvl l2">⭐⭐ Level 2 — Developing</div>
+    <h4>Task 2 — Multi-step Conversions</h4>
+    <table class="ctbl">
+      <thead><tr><th>Given</th><th>Convert to</th><th>Answer</th><th>Working</th></tr></thead>
+      <tbody>
+        <tr><td class="gv">1.5 GiB</td><td class="gv">bytes</td><td><input id="cv6"></td><td><input id="cv6w"></td></tr>
+        <tr><td class="gv">4 TiB</td><td class="gv">GiB</td><td><input id="cv7"></td><td><input id="cv7w"></td></tr>
+        <tr><td class="gv">0.5 MiB</td><td class="gv">bytes</td><td><input id="cv8"></td><td><input id="cv8w"></td></tr>
+        <tr><td class="gv">16 384 KiB</td><td class="gv">GiB</td><td><input id="cv9"></td><td><input id="cv9w"></td></tr>
+        <tr><td class="gv">2 097 152 bytes</td><td class="gv">MiB</td><td><input id="cv10"></td><td><input id="cv10w"></td></tr>
+      </tbody>
+    </table>
+    <label class="alabel">A USB drive holds 512 MiB. How many documents of 256 KiB each can be stored on it? Show working.</label>
+    <textarea class="ans" id="cv_usb" rows="3" placeholder="512 MiB = ... KiB, then ... ÷ 256 = ..."></textarea>
+  </div>
+
+  <div class="task l3">
+    <div class="lvl l3">⭐⭐⭐ Level 3 — Secure</div>
+    <h4>Task 3 — Mixed: bits, bytes, and prefixes</h4>
+    <label class="alabel">1. Convert 3 GiB to bits. Show each step.</label>
+    <textarea class="ans" id="cv11" rows="4" placeholder="3 GiB → MiB → KiB → bytes → bits"></textarea>
+    <label class="alabel">2. A data centre has 500 TB of storage (SI). Approximately how many TiB is this? (1 TB = 10¹² bytes, 1 TiB ≈ 1.0995 × 10¹² bytes)</label>
+    <textarea class="ans" id="cv12" rows="3"></textarea>
+    <label class="alabel">3. Explain in your own words why 1 GiB &gt; 1 GB even though "Giga" sounds the same.</label>
+    <textarea class="ans" id="cv13" rows="4"></textarea>
+  </div>
+
+  <div class="task l4">
+    <div class="lvl l4">⭐⭐⭐⭐ Level 4 — Extended</div>
+    <h4>Task 4 — Real-world Storage Problem</h4>
+    <p>A smartphone has 256 GB of internal storage (SI). The operating system reports free space in GiB.</p>
+    <label class="alabel">(a) How many bytes is 256 GB exactly?</label>
+    <input class="ans" id="cv14a" placeholder="256 × 10⁹ = ...">
+    <label class="alabel">(b) How many GiB is this? (1 GiB = 2³⁰ ≈ 1.074 × 10⁹ bytes)</label>
+    <textarea class="ans" id="cv14b" rows="3" placeholder="256 × 10⁹ ÷ 2³⁰ ≈ ..."></textarea>
+    <label class="alabel">(c) Apps on the phone take 40 GiB. How many MiB of space remain? Show full working.</label>
+    <textarea class="ans" id="cv14c" rows="4"></textarea>
+    <label class="alabel">(d) Why might a customer complain that their "256 GB" phone has less storage than expected?</label>
+    <textarea class="ans" id="cv14d" rows="3"></textarea>
+  </div>
+
+  <div class="secnav">
+    <button class="navbtn" onclick="goTo(0)">← Units</button>
+    <span class="pl">Section 2 of 6</span>
+    <button class="navbtn primary" onclick="goTo(2)">Text Representation →</button>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+  SECTION 3 — TEXT REPRESENTATION
+═════════════════════════════════════════════════════════════════════════════ -->
+<div class="sec" id="sec-2">
+  <div class="sec-hdr">
+    <div class="sec-num">03</div>
+    <div class="sec-titles">
+      <div class="label">Theory + Tasks</div>
+      <h2>Text Representation</h2>
+      <p>How characters are encoded as binary numbers using ASCII and Unicode</p>
+    </div>
+  </div>
+
+  <div class="tcard teal">
+    <h3>📝 ASCII — American Standard Code for Information Interchange</h3>
+    <p><strong>ASCII</strong> is the original character encoding standard. It assigns a unique number (code point) to each character.</p>
+    <ul>
+      <li><strong>Standard ASCII</strong> uses <strong>7 bits</strong> → 2⁷ = <strong>128 characters</strong> (0–127)</li>
+      <li><strong>Extended ASCII</strong> uses <strong>8 bits</strong> → 2⁸ = <strong>256 characters</strong> (0–255)</li>
+      <li>Covers: uppercase A–Z, lowercase a–z, digits 0–9, punctuation, control characters</li>
+      <li>Each character = <strong>1 byte</strong> of storage</li>
+    </ul>
+    <span class="formula">File size (bytes) = Number of characters × 1 byte</span>
+  </div>
+
+  <div class="tcard amber">
+    <h3>🌐 Unicode — Universal Character Encoding</h3>
+    <p>ASCII only covers English and basic symbols. <strong>Unicode</strong> was created to represent every character from every language on Earth.</p>
+    <ul>
+      <li><strong>UTF-8</strong> — variable width: 1 to 4 bytes per character. Backward compatible with ASCII.</li>
+      <li><strong>UTF-16</strong> — uses <strong>16 bits (2 bytes)</strong> per character for the most common characters (Basic Multilingual Plane). Can represent 2¹⁶ = 65 536 characters.</li>
+      <li><strong>UTF-32</strong> — uses <strong>32 bits (4 bytes)</strong> per character. Fixed width, covers all Unicode.</li>
+    </ul>
+    <span class="formula">UTF-16 file size (bytes) = Number of characters × 2</span>
+    <span class="formula">UTF-32 file size (bytes) = Number of characters × 4</span>
+  </div>
+
+  <div class="worked">
+    <b>Worked Example — Text File Size (UTF-16):</b>
+    <b style="color:#f0c97a">"To be or not to be, that is the question." </b>
+    <span class="step">Count characters (including spaces and punctuation): 42 characters</span>
+    <span class="step">UTF-16: 42 × 2 bytes = 84 bytes</span>
+    <span class="result">File size = 84 bytes</span>
+  </div>
+
+  <table class="dtbl">
+    <thead><tr><th>Encoding</th><th>Bits/char</th><th>Bytes/char</th><th>Max characters</th><th>Use case</th></tr></thead>
+    <tbody>
+      <tr><td>ASCII (7-bit)</td><td>7</td><td>1</td><td>128</td><td>English only</td></tr>
+      <tr><td>Extended ASCII</td><td>8</td><td>1</td><td>256</td><td>Western European</td></tr>
+      <tr><td>UTF-8</td><td>8–32</td><td>1–4</td><td>1 114 112</td><td>Web (most common)</td></tr>
+      <tr><td>UTF-16</td><td>16</td><td>2</td><td>65 536+</td><td>Windows, Java</td></tr>
+      <tr><td>UTF-32</td><td>32</td><td>4</td><td>All Unicode</td><td>Internal processing</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="divider">
+
+  <div class="task l1">
+    <div class="lvl l1">⭐ Level 1 — Foundation</div>
+    <h4>Task 1 — Basic Text Encoding Facts</h4>
+    <label class="alabel">1. How many bits does standard ASCII use per character?</label>
+    <input class="ans" id="t1_1" placeholder="Answer...">
+    <label class="alabel">2. How many different characters can be represented by 8-bit extended ASCII?</label>
+    <input class="ans" id="t1_2" placeholder="2⁸ = ...">
+    <label class="alabel">3. A text file contains 200 ASCII characters. What is its file size in bytes?</label>
+    <input class="ans" id="t1_3" placeholder="200 × ... = ...">
+    <label class="alabel">4. Why was Unicode created? What problem does it solve?</label>
+    <textarea class="ans" id="t1_4" rows="3"></textarea>
+  </div>
+
+  <div class="task l2">
+    <div class="lvl l2">⭐⭐ Level 2 — Developing</div>
+    <h4>Task 2 — UTF-16 File Size Calculations</h4>
+    <p class="hint">Hint: In UTF-16, each character = 2 bytes. Count ALL characters including spaces and punctuation.</p>
+
+    <p><strong>Question A:</strong> In UTF-16 encoding (16 bits per character), find the size in bytes of this sentence:</p>
+    <div class="tcard" style="background:var(--warm);margin-bottom:12px">
+      <p style="font-family:var(--mono);font-size:13px;text-align:center;color:var(--ink)">"To be, or not to be — that is the question."</p>
+    </div>
+    <label class="alabel">Count the characters (include spaces and punctuation):</label>
+    <input class="ans" id="t2_count_a" placeholder="Number of characters = ...">
+    <label class="alabel">File size in bytes (UTF-16):</label>
+    <input class="ans" id="t2_bytes_a" placeholder="... × 2 = ... bytes">
+    <button class="reveal-btn" onclick="toggle('ms_t2a')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_t2a">Characters: 45 (count carefully including em dash and spaces). Size = 45 × 2 = <strong>90 bytes</strong></div>
+
+    <hr class="divider">
+    <p class="mt12"><strong>Question B (exam-style):</strong> In a version of Unicode encoding, each character is coded using 16 bits. Determine the information volume in bytes of a message of <strong>512 characters</strong> in this encoding.</p>
+    <label class="alabel">Working:</label>
+    <textarea class="ans" id="t2_b" rows="3" placeholder="512 characters × 16 bits = ... bits ÷ 8 = ... bytes"></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_t2b')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_t2b">512 × 16 bits = 8192 bits. 8192 ÷ 8 = <strong>1024 bytes</strong></div>
+  </div>
+
+  <div class="task l3">
+    <div class="lvl l3">⭐⭐⭐ Level 3 — Secure</div>
+    <h4>Task 3 — Exam-Style Text Questions</h4>
+
+    <p><strong>Question A (exam-style):</strong> In a Unicode encoding where each character uses <strong>16 bits</strong>, determine the size in bytes of the following sentence:</p>
+    <div class="tcard" style="background:var(--warm);margin-bottom:12px">
+      <p style="font-family:var(--mono);font-size:13px;text-align:center;color:var(--ink)">"Shall I compare thee to a summer's day?"</p>
+    </div>
+    <label class="alabel">Count of characters:</label>
+    <input class="ans" id="t3_count" placeholder="characters = ...">
+    <label class="alabel">Size in bytes:</label>
+    <input class="ans" id="t3_bytes" placeholder="... × 2 = ... bytes">
+    <button class="reveal-btn" onclick="toggle('ms_t3a')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_t3a">40 characters (including spaces, apostrophe, question mark). 40 × 2 = <strong>80 bytes</strong>. Note: the opening/closing quotes may or may not be counted depending on context — accept 40–42.</div>
+
+    <hr class="divider">
+    <p class="mt12"><strong>Question B:</strong> A poem contains 3 verses. Each verse has 8 lines. Each line has an average of 35 characters. The poem is stored in UTF-16. What is the total file size in bytes? Show working.</p>
+    <textarea class="ans" id="t3_poem" rows="5" placeholder="Total characters = 3 × 8 × 35 = ...&#10;File size = ... × 2 = ... bytes"></textarea>
+
+    <p class="mt12"><strong>Question C:</strong> Explain why the same text file might be a different size when saved in ASCII compared to UTF-32.</p>
+    <textarea class="ans" id="t3_explain" rows="4"></textarea>
+  </div>
+
+  <div class="task l4">
+    <div class="lvl l4">⭐⭐⭐⭐ Level 4 — Extended</div>
+    <h4>Task 4 — Comparing Encodings</h4>
+    <table class="ctbl">
+      <thead><tr><th>Text</th><th>Characters</th><th>ASCII (bytes)</th><th>UTF-16 (bytes)</th><th>UTF-32 (bytes)</th></tr></thead>
+      <tbody>
+        <tr><td class="gv">"Hello"</td><td><input id="enc1_n"></td><td><input id="enc1_a"></td><td><input id="enc1_u16"></td><td><input id="enc1_u32"></td></tr>
+        <tr><td class="gv">"Computer Science"</td><td><input id="enc2_n"></td><td><input id="enc2_a"></td><td><input id="enc2_u16"></td><td><input id="enc2_u32"></td></tr>
+        <tr><td class="gv">512-character essay</td><td class="gv">512</td><td><input id="enc3_a"></td><td><input id="enc3_u16"></td><td><input id="enc3_u32"></td></tr>
+      </tbody>
+    </table>
+    <label class="alabel">A 1 MiB file encoded in UTF-16 is re-saved in UTF-8 where all characters happen to be ASCII (1 byte each). What is the new file size? Explain.</label>
+    <textarea class="ans" id="t4_ext" rows="4"></textarea>
+  </div>
+
+  <div class="secnav">
+    <button class="navbtn" onclick="goTo(1)">← Converting Units</button>
+    <span class="pl">Section 3 of 6</span>
+    <button class="navbtn primary" onclick="goTo(3)">Image Representation →</button>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+  SECTION 4 — IMAGE REPRESENTATION
+═════════════════════════════════════════════════════════════════════════════ -->
+<div class="sec" id="sec-3">
+  <div class="sec-hdr">
+    <div class="sec-num">04</div>
+    <div class="sec-titles">
+      <div class="label">Theory + Tasks</div>
+      <h2>Image Representation</h2>
+      <p>Pixels, colour depth, resolution, and file size calculations</p>
+    </div>
+  </div>
+
+  <div class="tcard teal">
+    <h3>🖼️ How Images are Stored — Bitmaps</h3>
+    <p>A <strong>bitmap</strong> (raster) image stores colour data for every individual pixel. Each pixel is one coloured dot on the screen.</p>
+    <ul>
+      <li><strong>Resolution</strong> — the dimensions of the image in pixels, e.g. 1920 × 1080</li>
+      <li><strong>Colour depth</strong> — the number of bits used to store the colour of each pixel</li>
+      <li>More bits per pixel = more possible colours</li>
+    </ul>
+    <span class="formula">Number of colours = 2^(colour depth in bits)</span>
+    <span class="formula">File size (bits) = Width × Height × Colour depth (bits per pixel)</span>
+    <span class="formula">File size (bytes) = Width × Height × Colour depth ÷ 8</span>
+    <span class="formula">File size (KiB) = Width × Height × Colour depth ÷ 8 ÷ 1024</span>
+  </div>
+
+  <div class="tcard amber">
+    <h3>🎨 Colour Depth Examples</h3>
+    <table class="dtbl" style="margin-top:8px">
+      <thead><tr><th>Colour depth</th><th>Bits/pixel</th><th>Colours possible</th><th>Common name</th></tr></thead>
+      <tbody>
+        <tr><td>1-bit</td><td>1</td><td>2 (black & white)</td><td>Monochrome</td></tr>
+        <tr><td>2-bit</td><td>2</td><td>4</td><td>CGA</td></tr>
+        <tr><td>4-bit</td><td>4</td><td>16</td><td>—</td></tr>
+        <tr><td>8-bit</td><td>8</td><td>256</td><td>Indexed colour</td></tr>
+        <tr><td>16-bit</td><td>16</td><td>65 536</td><td>High colour</td></tr>
+        <tr><td>24-bit</td><td>24</td><td>16 777 216</td><td>True colour (RGB)</td></tr>
+        <tr><td>32-bit</td><td>32</td><td>~4.3 billion</td><td>True colour + alpha</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="worked">
+    <b>Worked Example 1 — File size from pixels and colour depth:</b>
+    <b style="color:#f0c97a">Image: 64 × 64 pixels, 256 colours</b>
+    <span class="step">Step 1: Colour depth — 256 colours = 2⁸ → 8 bits per pixel</span>
+    <span class="step">Step 2: Total bits = 64 × 64 × 8 = 32 768 bits</span>
+    <span class="step">Step 3: Bytes = 32 768 ÷ 8 = 4 096 bytes</span>
+    <span class="step">Step 4: KiB = 4 096 ÷ 1024 = 4 KiB</span>
+    <span class="result">Answer: 4 KiB ✓</span>
+  </div>
+
+  <div class="worked">
+    <b>Worked Example 2 — Colour reduction:</b>
+    <b style="color:#f0c97a">A 256-colour bitmap converted to 4-colour format shrinks by 18 KiB. Find the original size.</b>
+    <span class="step">256 colours = 8 bits/px. 4 colours = 2 bits/px.</span>
+    <span class="step">Let original size = S KiB. New size = S × (2/8) = S/4 KiB</span>
+    <span class="step">Reduction: S − S/4 = 3S/4 = 18 KiB</span>
+    <span class="step">S = 18 × 4/3 = 24 KiB</span>
+    <span class="result">Original file = 24 KiB ✓</span>
+  </div>
+
+  <div class="worked">
+    <b>Worked Example 3 — Find palette size from given file size:</b>
+    <b style="color:#f0c97a">3200×1800 image stored in 3 MiB. Find max number of colours.</b>
+    <span class="step">3 MiB = 3 × 1 048 576 bytes = 3 145 728 bytes = 25 165 824 bits</span>
+    <span class="step">Bits per pixel = 25 165 824 ÷ (3200 × 1800) = 25 165 824 ÷ 5 760 000 ≈ 4.37</span>
+    <span class="step">Must use whole bits → 4 bits per pixel</span>
+    <span class="step">Max colours = 2⁴ = 16</span>
+    <span class="result">Maximum 16 colours ✓</span>
+  </div>
+
+  <hr class="divider">
+
+  <div class="task l1">
+    <div class="lvl l1">⭐ Level 1 — Foundation</div>
+    <h4>Task 1 — Basic Image Calculations</h4>
+    <p>Use the formula: File size (bytes) = Width × Height × Colour depth ÷ 8</p>
+    <table class="ctbl">
+      <thead><tr><th>Width (px)</th><th>Height (px)</th><th>Colours</th><th>Bits/pixel</th><th>File size (bytes)</th><th>File size (KiB)</th></tr></thead>
+      <tbody>
+        <tr class="example"><td class="gv">64</td><td class="gv">64</td><td class="gv">256</td><td class="gv" style="color:var(--sage)">8</td><td class="gv" style="color:var(--sage)">4 096</td><td class="gv" style="color:var(--sage)">4</td></tr>
+        <tr><td class="gv">128</td><td class="gv">128</td><td class="gv">256</td><td><input id="img1_bpp"></td><td><input id="img1_b"></td><td><input id="img1_kib"></td></tr>
+        <tr><td class="gv">100</td><td class="gv">100</td><td class="gv">16</td><td><input id="img2_bpp"></td><td><input id="img2_b"></td><td><input id="img2_kib" placeholder="round up if needed"></td></tr>
+        <tr><td class="gv">200</td><td class="gv">150</td><td class="gv">2</td><td><input id="img3_bpp"></td><td><input id="img3_b"></td><td><input id="img3_kib"></td></tr>
+      </tbody>
+    </table>
+    <p><strong>Q: What is the minimum KiB needed to store a 128×128 pixel image with 256 colours?</strong></p>
+    <textarea class="ans" id="img_q128" rows="3" placeholder="Working: 128 × 128 × ... ÷ 8 ÷ 1024 = ..."></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_img_q128')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_img_q128">128 × 128 = 16 384 pixels. 256 colours = 8 bits/px. 16 384 × 8 = 131 072 bits. ÷8 = 16 384 bytes. ÷1024 = <strong>16 KiB</strong></div>
+  </div>
+
+  <div class="task l2">
+    <div class="lvl l2">⭐⭐ Level 2 — Developing</div>
+    <h4>Task 2 — Colour Reduction</h4>
+    <p><strong>Exam question:</strong> After converting a 256-colour bitmap to a 4-colour format, its size decreased by 18 KiB. What was the original file size in KiB?</p>
+    <div class="hint">Hint: Work out the ratio of bits per pixel before and after. Let original = S, write an equation for the reduction.</div>
+    <label class="alabel">Bits/pixel for 256 colours:</label>
+    <input class="ans" id="cr1" placeholder="256 = 2^? so ? bits">
+    <label class="alabel">Bits/pixel for 4 colours:</label>
+    <input class="ans" id="cr2" placeholder="4 = 2^? so ? bits">
+    <label class="alabel">Full working and answer:</label>
+    <textarea class="ans" id="cr3" rows="5" placeholder="If original = S KiB, new size = S × (2/8) = ...&#10;Reduction = S - S/4 = 3S/4 = 18&#10;S = ..."></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_cr')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_cr">256 colours = 8 bits/px. 4 colours = 2 bits/px. New size = original × (2/8) = original/4. Reduction = 3/4 of original = 18 KiB. Original = 18 × 4/3 = <strong>24 KiB</strong></div>
+
+    <hr class="divider">
+    <p><strong>Extension:</strong> How does reducing colour depth affect image quality? Describe the trade-off.</p>
+    <textarea class="ans" id="cr_ext" rows="3"></textarea>
+  </div>
+
+  <div class="task l3">
+    <div class="lvl l3">⭐⭐⭐ Level 3 — Secure</div>
+    <h4>Task 3 — Finding Palette Size</h4>
+    <p><strong>Exam question:</strong> A camera takes photos at 3200×1800 pixels. Each photo is stored in 3 MiB. Find the maximum number of colours in the palette.</p>
+    <div class="hint">Hint: Convert 3 MiB to bits. Divide by total pixels to get bits per pixel. Then 2^(bits/px) = colours.</div>
+    <label class="alabel">Step 1 — Convert 3 MiB to bytes, then to bits:</label>
+    <textarea class="ans" id="ps1" rows="2" placeholder="3 × 1024 × 1024 = ... bytes × 8 = ... bits"></textarea>
+    <label class="alabel">Step 2 — Total pixels:</label>
+    <input class="ans" id="ps2" placeholder="3200 × 1800 = ...">
+    <label class="alabel">Step 3 — Bits per pixel:</label>
+    <input class="ans" id="ps3" placeholder="... ÷ ... = ...">
+    <label class="alabel">Step 4 — Maximum colours (must use whole bits, so round down):</label>
+    <input class="ans" id="ps4" placeholder="2^? = ...">
+    <button class="reveal-btn" onclick="toggle('ms_ps')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_ps">3 MiB = 3 145 728 bytes = 25 165 824 bits. Pixels = 5 760 000. Bits/px = 4.37... → round down to 4. 2⁴ = <strong>16 colours</strong></div>
+  </div>
+
+  <div class="task l4">
+    <div class="lvl l4">⭐⭐⭐⭐ Level 4 — Extended</div>
+    <h4>Task 4 — Multi-step Image Problems</h4>
+    <p><strong>Question A:</strong> A digital artist needs to store a 1920×1080 true colour image (24-bit). Calculate the uncompressed file size in MiB (to 2 d.p.).</p>
+    <textarea class="ans" id="img4a" rows="4" placeholder="1920 × 1080 × 24 ÷ 8 ÷ 1024 ÷ 1024 = ... MiB"></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_img4a')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_img4a">1920 × 1080 = 2 073 600 px. × 24 = 49 766 400 bits. ÷8 = 6 220 800 bytes. ÷1024 = 6075 KiB. ÷1024 ≈ <strong>5.93 MiB</strong></div>
+
+    <p class="mt20"><strong>Question B:</strong> Explain why metadata (colour palette, resolution data) is stored alongside the image data in a bitmap file, and suggest ONE effect of ignoring this metadata.</p>
+    <textarea class="ans" id="img4b" rows="4"></textarea>
+    <p class="mt12"><strong>Question C:</strong> A graphic designer wants to store 500 images of 1280×720 pixels each with 65 536 colours on a 1 GiB flash drive. Will they all fit? Show all working.</p>
+    <textarea class="ans" id="img4c" rows="6" placeholder="65536 colours = 2^16 = 16 bits/px&#10;Size per image: 1280 × 720 × 16 ÷ 8 = ... bytes&#10;500 images: ...&#10;Compare to 1 GiB = 1024³ bytes = ..."></textarea>
+  </div>
+
+  <div class="secnav">
+    <button class="navbtn" onclick="goTo(2)">← Text</button>
+    <span class="pl">Section 4 of 6</span>
+    <button class="navbtn primary" onclick="goTo(4)">Sound Representation →</button>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+  SECTION 5 — SOUND REPRESENTATION
+═════════════════════════════════════════════════════════════════════════════ -->
+<div class="sec" id="sec-4">
+  <div class="sec-hdr">
+    <div class="sec-num">05</div>
+    <div class="sec-titles">
+      <div class="label">Theory + Tasks</div>
+      <h2>Sound Representation</h2>
+      <p>Sampling, sample rate, bit depth, channels, and audio file size</p>
+    </div>
+  </div>
+
+  <div class="tcard teal">
+    <h3>🎵 How Sound is Digitised — ADC Process</h3>
+    <p>Sound is an <strong>analogue</strong> (continuous) wave. To store it digitally, an <strong>Analogue-to-Digital Converter (ADC)</strong> takes regular snapshots called <strong>samples</strong>.</p>
+    <ul>
+      <li><strong>Sample rate</strong> (sampling frequency) — how many samples are taken per second, measured in Hertz (Hz) or kHz. More samples → higher quality but larger file.</li>
+      <li><strong>Bit depth</strong> (sample resolution) — how many bits are used to record each sample's amplitude. More bits → more precise amplitude → better quality.</li>
+      <li><strong>Channels</strong> — mono (1 channel), stereo (2 channels), quad (4 channels), etc.</li>
+    </ul>
+    <span class="formula">File size (bits) = Sample rate × Bit depth × Channels × Duration (seconds)</span>
+    <span class="formula">File size (bytes) = Sample rate × Bit depth × Channels × Duration ÷ 8</span>
+  </div>
+
+  <div class="tcard sage">
+    <h3>📊 Common Audio Standards</h3>
+    <table class="dtbl" style="margin-top:8px">
+      <thead><tr><th>Quality</th><th>Sample rate</th><th>Bit depth</th><th>Channels</th></tr></thead>
+      <tbody>
+        <tr><td>Telephone</td><td>8 kHz</td><td>8-bit</td><td>Mono (1)</td></tr>
+        <tr><td>AM Radio</td><td>11.025 kHz</td><td>8-bit</td><td>Mono (1)</td></tr>
+        <tr><td>CD Audio</td><td>44.1 kHz</td><td>16-bit</td><td>Stereo (2)</td></tr>
+        <tr><td>DVD Audio</td><td>96 kHz</td><td>24-bit</td><td>Stereo (2)</td></tr>
+        <tr><td>Studio</td><td>192 kHz</td><td>32-bit</td><td>Stereo (2)</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:8px">The <strong>Nyquist theorem</strong> states the sample rate must be at least <strong>twice</strong> the highest frequency you want to capture. Human hearing tops at ~20 kHz, hence CD uses 44.1 kHz.</p>
+  </div>
+
+  <div class="worked">
+    <b>Worked Example 1 — 4-channel recording:</b>
+    <b style="color:#f0c97a">4-channel (quad), 32 kHz, 32-bit, 2 minutes. Find file size in MiB.</b>
+    <span class="step">Duration: 2 min = 120 seconds</span>
+    <span class="step">File size (bits) = 32 000 × 32 × 4 × 120 = 491 520 000 bits</span>
+    <span class="step">÷ 8 = 61 440 000 bytes</span>
+    <span class="step">÷ 1 048 576 ≈ 58.6 MiB</span>
+    <span class="result">Nearest integer multiple of 10 → 60 MiB ✓</span>
+  </div>
+
+  <div class="worked">
+    <b>Worked Example 2 — Transmission time comparison:</b>
+    <b style="color:#f0c97a">File 1: sent in 30s. File 2: 2× bit depth, 1.5× sample rate, channel 4× faster. Time for File 2?</b>
+    <span class="step">File 2 size relative to File 1: × 2 (bit depth) × 1.5 (sample rate) = × 3</span>
+    <span class="step">Channel to City B is 4× faster than City A</span>
+    <span class="step">Time = 30 × 3 ÷ 4 = 22.5 → wait, let's recalculate:</span>
+    <span class="step">File 1 size = rate × 30. File 2 = 3 × File 1 size. Channel B speed = 4 × Channel A speed.</span>
+    <span class="step">Time B = File 2 size ÷ Channel B speed = (3 × File 1) ÷ (4 × rate) = 3/4 × 30 = 22.5s</span>
+    <span class="step">But sample rate DECREASED by 1.5×, so File 2 = 2 × (1/1.5) = 2/1.5 × File 1 = 4/3 × File 1</span>
+    <span class="step">Time B = (4/3 × 30) ÷ 4 = 40/4 = <b>10 seconds</b></span>
+    <span class="result">Answer: 10 seconds ✓</span>
+  </div>
+
+  <hr class="divider">
+
+  <div class="task l1">
+    <div class="lvl l1">⭐ Level 1 — Foundation</div>
+    <h4>Task 1 — Audio Vocabulary</h4>
+    <label class="alabel">1. What is meant by "sample rate" in audio digitisation?</label>
+    <textarea class="ans" id="s1_1" rows="2"></textarea>
+    <label class="alabel">2. What is "bit depth" (sample resolution)?</label>
+    <textarea class="ans" id="s1_2" rows="2"></textarea>
+    <label class="alabel">3. CD audio uses 44 100 samples per second and 16-bit depth. How many bits are stored per second of CD audio (stereo)?</label>
+    <textarea class="ans" id="s1_3" rows="3" placeholder="44100 × 16 × 2 = ... bits/second"></textarea>
+    <label class="alabel">4. Name ONE way to reduce audio file size without changing duration.</label>
+    <input class="ans" id="s1_4" placeholder="Answer...">
+  </div>
+
+  <div class="task l2">
+    <div class="lvl l2">⭐⭐ Level 2 — Developing</div>
+    <h4>Task 2 — File Size Calculations</h4>
+    <table class="ctbl">
+      <thead><tr><th>Sample rate</th><th>Bit depth</th><th>Channels</th><th>Duration</th><th>File size (bytes)</th><th>File size (MiB, 2dp)</th></tr></thead>
+      <tbody>
+        <tr class="example"><td class="gv">44 100 Hz</td><td class="gv">16</td><td class="gv">2</td><td class="gv">60 s</td><td class="gv" style="color:var(--sage)">10 584 000</td><td class="gv" style="color:var(--sage)">10.09</td></tr>
+        <tr><td class="gv">22 050 Hz</td><td class="gv">8</td><td class="gv">1</td><td class="gv">30 s</td><td><input id="aud1_b"></td><td><input id="aud1_m"></td></tr>
+        <tr><td class="gv">48 000 Hz</td><td class="gv">16</td><td class="gv">2</td><td class="gv">120 s</td><td><input id="aud2_b"></td><td><input id="aud2_m"></td></tr>
+        <tr><td class="gv">32 000 Hz</td><td class="gv">32</td><td class="gv">4</td><td class="gv">120 s</td><td><input id="aud3_b"></td><td><input id="aud3_m" placeholder="nearest 10 MiB"></td></tr>
+      </tbody>
+    </table>
+    <p><strong>Exam question:</strong> A 4-channel (quad) recording is made at 32 kHz, 32-bit resolution for 2 minutes, with no compression. Estimate the file size in MiB (to the nearest integer multiple of 10).</p>
+    <textarea class="ans" id="s2_quad" rows="5" placeholder="32 000 × 32 × 4 × 120 ÷ 8 ÷ 1 048 576 = ... MiB&#10;Nearest multiple of 10 = ..."></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_quad')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_quad">32 000 × 32 × 4 × 120 = 491 520 000 bits. ÷8 = 61 440 000 bytes. ÷1 048 576 ≈ 58.6 MiB. Nearest multiple of 10 = <strong>60 MiB</strong> ✓</div>
+  </div>
+
+  <div class="task l3">
+    <div class="lvl l3">⭐⭐⭐ Level 3 — Secure</div>
+    <h4>Task 3 — Transmission Time Comparison</h4>
+    <p><strong>Exam question:</strong> A music track was digitised and sent to City A in <strong>30 seconds</strong>. The same track was re-digitised with <strong>2× the bit depth</strong> and <strong>1.5× lower sample rate</strong> (i.e., sample rate divided by 1.5). No compression. The channel to City B is <strong>4× faster</strong> than City A's channel. How many seconds did the transfer to City B take?</p>
+    <div class="hint">Hint: First find the new file size as a multiple of the original. Then apply the new channel speed.</div>
+    <label class="alabel">Step 1 — New file size relative to original:</label>
+    <textarea class="ans" id="tr1" rows="3" placeholder="New file = original × (bit depth factor) × (sample rate factor) = original × 2 × (1 ÷ 1.5) = ..."></textarea>
+    <label class="alabel">Step 2 — Time to transfer to City B:</label>
+    <textarea class="ans" id="tr2" rows="3" placeholder="Time = (new file size / old file size) × 30 ÷ (speed factor) = ... ÷ 4 = ..."></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_tr')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_tr">Size factor = 2 × (1/1.5) = 2/1.5 = 4/3. New file is 4/3 × original. Transfer time = 30 × (4/3) ÷ 4 = 30 × 4/(3×4) = 30/3 = <strong>10 seconds</strong> ✓</div>
+
+    <hr class="divider">
+    <p class="mt12"><strong>Question B:</strong> Explain what happens to audio quality if the sample rate is too low. Relate your answer to the Nyquist theorem.</p>
+    <textarea class="ans" id="tr3" rows="4"></textarea>
+  </div>
+
+  <div class="task l4">
+    <div class="lvl l4">⭐⭐⭐⭐ Level 4 — Extended</div>
+    <h4>Task 4 — Complex Audio Problems</h4>
+    <p><strong>Question A:</strong> A podcast studio records 3 hours of audio in stereo at 48 kHz with 24-bit depth. Estimate the total uncompressed storage required in GiB (to 2 d.p.).</p>
+    <textarea class="ans" id="aud4a" rows="5" placeholder="48000 × 24 × 2 × (3×3600) ÷ 8 ÷ 1024³ = ..."></textarea>
+    <p class="mt12"><strong>Question B:</strong> The studio then applies lossless compression that reduces the file to 60% of its original size. How many GiB is the compressed file?</p>
+    <input class="ans" id="aud4b" placeholder="... × 0.6 = ...">
+    <p class="mt12"><strong>Question C:</strong> Compare the trade-offs between high and low sample rates. Discuss both quality and storage implications.</p>
+    <textarea class="ans" id="aud4c" rows="5"></textarea>
+    <p class="mt12"><strong>Question D:</strong> Why does the Nyquist theorem mean that a 44 100 Hz sample rate is sufficient for human hearing, but 8 000 Hz is not?</p>
+    <textarea class="ans" id="aud4d" rows="4"></textarea>
+  </div>
+
+  <div class="secnav">
+    <button class="navbtn" onclick="goTo(3)">← Images</button>
+    <span class="pl">Section 5 of 6</span>
+    <button class="navbtn primary" onclick="goTo(5)">Revision →</button>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+  SECTION 6 — REVISION & CHECK QUESTIONS
+═════════════════════════════════════════════════════════════════════════════ -->
+<div class="sec" id="sec-5">
+  <div class="sec-hdr">
+    <div class="sec-num">06</div>
+    <div class="sec-titles">
+      <div class="label">Revision</div>
+      <h2>Revision &amp; Check Questions</h2>
+      <p>Comprehensive exam-style questions covering all topics</p>
+    </div>
+  </div>
+
+  <div class="task l1">
+    <div class="lvl l1">Part A — Vocabulary Match</div>
+    <h4>Define each term in your own words</h4>
+    <table class="ctbl">
+      <thead><tr><th>Term</th><th>Your definition</th></tr></thead>
+      <tbody>
+        <tr><td class="gv">Bit</td><td><input id="rv_bit"></td></tr>
+        <tr><td class="gv">Kibibyte (KiB)</td><td><input id="rv_kib"></td></tr>
+        <tr><td class="gv">Pixel</td><td><input id="rv_px"></td></tr>
+        <tr><td class="gv">Sample rate</td><td><input id="rv_sr"></td></tr>
+        <tr><td class="gv">Bit depth (images)</td><td><input id="rv_bdi"></td></tr>
+        <tr><td class="gv">Bit depth (audio)</td><td><input id="rv_bda"></td></tr>
+        <tr><td class="gv">Unicode</td><td><input id="rv_uni"></td></tr>
+        <tr><td class="gv">Colour depth</td><td><input id="rv_cd"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="task l2">
+    <div class="lvl l2">Part B — Short Answer</div>
+    <label class="alabel">1. Convert 3 MiB to bytes. Show working.</label>
+    <textarea class="ans" id="rv1" rows="2"></textarea>
+    <label class="alabel">2. How many colours can a 4-bit colour depth display?</label>
+    <input class="ans" id="rv2">
+    <label class="alabel">3. A text file has 350 characters. It is saved in UTF-16. What is its size in bytes?</label>
+    <textarea class="ans" id="rv3" rows="2" placeholder="350 × 2 = ..."></textarea>
+    <label class="alabel">4. What two factors determine the quality of a digitised audio file?</label>
+    <textarea class="ans" id="rv4" rows="2"></textarea>
+    <label class="alabel">5. State the formula for the uncompressed size of a bitmap image.</label>
+    <textarea class="ans" id="rv5" rows="2"></textarea>
+    <label class="alabel">6. Why is 1 GiB larger than 1 GB?</label>
+    <textarea class="ans" id="rv6" rows="2"></textarea>
+  </div>
+
+  <div class="task l3">
+    <div class="lvl l3">Part C — Structured Questions</div>
+
+    <h4>Question 1 — Units [5 marks]</h4>
+    <p>(a) Complete the table:</p>
+    <table class="ctbl">
+      <thead><tr><th>Value</th><th>In bytes</th><th>In KiB</th><th>In MiB</th></tr></thead>
+      <tbody>
+        <tr><td class="gv">4 096 bytes</td><td class="gv">4 096</td><td><input id="sc1_a_kib"></td><td><input id="sc1_a_mib"></td></tr>
+        <tr><td class="gv">2 MiB</td><td><input id="sc1_b_b"></td><td><input id="sc1_b_kib"></td><td class="gv">2</td></tr>
+        <tr><td class="gv">1 GiB</td><td><input id="sc1_c_b"></td><td><input id="sc1_c_kib"></td><td><input id="sc1_c_mib"></td></tr>
+      </tbody>
+    </table>
+    <label class="alabel">(b) Explain the difference between a KB and a KiB, and why this difference matters in practice.</label>
+    <textarea class="ans" id="sc1_b_explain" rows="4"></textarea>
+
+    <h4 class="mt20">Question 2 — Image Representation [6 marks]</h4>
+    <label class="alabel">(a) Calculate the minimum storage (in KiB) for a 64×64 pixel image with 256 colours. [3]</label>
+    <textarea class="ans" id="sc2a" rows="4" placeholder="256 colours → ? bits/px&#10;64 × 64 × ? ÷ 8 ÷ 1024 = ..."></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_sc2a')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_sc2a">256 = 2⁸ → 8 bits/pixel. 64 × 64 × 8 = 32 768 bits. ÷8 = 4 096 bytes. ÷1024 = <strong>4 KiB</strong> ✓</div>
+    <label class="alabel">(b) The same image is converted to use only 4 colours. How much storage is now needed (KiB)? [2]</label>
+    <textarea class="ans" id="sc2b" rows="3" placeholder="4 colours → 2 bits/px&#10;64 × 64 × 2 ÷ 8 ÷ 1024 = ..."></textarea>
+    <label class="alabel">(c) By how many KiB did the file size decrease? What percentage saving is this? [1]</label>
+    <textarea class="ans" id="sc2c" rows="2"></textarea>
+
+    <h4 class="mt20">Question 3 — Audio [6 marks]</h4>
+    <label class="alabel">(a) A 4-channel recording is made at 32 kHz sample rate, 32-bit depth, for 2 minutes. Calculate the file size in MiB (give answer as nearest multiple of 10). [4]</label>
+    <textarea class="ans" id="sc3a" rows="5" placeholder="32000 × 32 × 4 × 120 ÷ 8 ÷ 1048576 ≈ ... MiB"></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_sc3a')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_sc3a">32 000 × 32 × 4 × 120 = 491 520 000 bits. ÷8 = 61 440 000 bytes. ÷1 048 576 ≈ 58.6 MiB. Answer = <strong>60 MiB</strong> ✓</div>
+    <label class="alabel">(b) How would doubling the sample rate affect (i) file size and (ii) audio quality? [2]</label>
+    <textarea class="ans" id="sc3b" rows="3"></textarea>
+
+    <h4 class="mt20">Question 4 — Text Encoding [4 marks]</h4>
+    <label class="alabel">(a) A message contains 512 characters encoded in UTF-16. What is the file size in bytes? [2]</label>
+    <textarea class="ans" id="sc4a" rows="2" placeholder="512 × 16 bits = ... bits ÷ 8 = ... bytes"></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_sc4a')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_sc4a">512 × 16 = 8192 bits. ÷8 = <strong>1024 bytes</strong> ✓</div>
+    <label class="alabel">(b) The same message is re-encoded in ASCII. What is the new file size? What assumption must you make? [2]</label>
+    <textarea class="ans" id="sc4b" rows="3"></textarea>
+  </div>
+
+  <div class="task l4">
+    <div class="lvl l4">Part D — Exam-Style Quick Fire [1 mark each]</div>
+    <label class="alabel">1. How many bytes in 1 MiB?</label>
+    <input class="ans" id="qf1">
+    <label class="alabel">2. A 256-colour image uses how many bits per pixel?</label>
+    <input class="ans" id="qf2">
+    <label class="alabel">3. State ONE advantage of increasing bit depth in audio recording.</label>
+    <textarea class="ans" id="qf3" rows="2"></textarea>
+    <label class="alabel">4. Convert 0.25 GiB to MiB.</label>
+    <input class="ans" id="qf4" placeholder="0.25 × 1024 = ...">
+    <label class="alabel">5. A mono audio file recorded at 8 kHz, 8-bit for 60 seconds: file size in bytes?</label>
+    <textarea class="ans" id="qf5" rows="2" placeholder="8000 × 8 × 1 × 60 ÷ 8 = ..."></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_qf5')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_qf5">8 000 × 8 × 1 × 60 = 3 840 000 bits. ÷8 = <strong>480 000 bytes</strong></div>
+    <label class="alabel">6. Name the encoding standard that uses 16 bits per character and can represent 65 536 characters.</label>
+    <input class="ans" id="qf6">
+    <label class="alabel">7. State the Nyquist rule for sample rate.</label>
+    <textarea class="ans" id="qf7" rows="2"></textarea>
+    <label class="alabel">8. A 1920×1080 image is stored with 24-bit colour depth. State the file size in bytes (no compression).</label>
+    <textarea class="ans" id="qf8" rows="2" placeholder="1920 × 1080 × 24 ÷ 8 = ..."></textarea>
+    <button class="reveal-btn" onclick="toggle('ms_qf8')">Show mark scheme</button>
+    <div class="mark-scheme" id="ms_qf8">1920 × 1080 × 24 ÷ 8 = <strong>6 220 800 bytes</strong></div>
+  </div>
+
+  <div class="secnav">
+    <button class="navbtn" onclick="goTo(4)">← Sound</button>
+    <span class="pl">Section 6 of 6</span>
+    <button class="navbtn primary" onclick="document.getElementById('submit-zone').scrollIntoView({behavior:'smooth'})">Submit Answers ↓</button>
+  </div>
+</div>
+
+<!-- ══ SUBMIT ZONE ════════════════════════════════════════════════════════════ -->
+<div class="submit-zone" id="submit-zone">
+  <h2>Submit Your Work</h2>
+  <p>All your answers will be sent to your teacher as a GitHub Issue.<br>You need a GitHub account — or use the class shared login.</p>
+  <button class="sbtn main" onclick="submitGH()">
+    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58v-2.03c-3.34.72-4.04-1.6-4.04-1.6-.54-1.38-1.33-1.75-1.33-1.75-1.08-.74.08-.73.08-.73 1.2.08 1.83 1.23 1.83 1.23 1.06 1.82 2.8 1.29 3.48.99.1-.77.41-1.3.75-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+    Submit to GitHub Issues
+  </button>
+  <button class="sbtn alt" onclick="dlAnswers()">⬇ Download as Text File</button>
+  <p style="font-size:12px;color:#64748b;margin-top:16px">After clicking Submit, GitHub opens with your answers ready. Click <strong>Submit new issue</strong> to send to your teacher.</p>
+</div>
+
+</div><!-- /container -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+let cur = 0;
+const N = 6;
+function goTo(n){
+  document.querySelectorAll('.sec').forEach((s,i)=>s.classList.toggle('on',i===n));
+  document.querySelectorAll('.tbn').forEach((b,i)=>b.classList.toggle('on',i===n));
+  cur=n;
+  document.getElementById('prog-fill').style.width=`${((n+1)/N)*100}%`;
+  document.getElementById('prog-label').textContent=`Section ${n+1} / ${N}`;
+  window.scrollTo({top:0,behavior:'smooth'});
+  saveAll();
+}
+
+// ── MARK SCHEME TOGGLE ────────────────────────────────────────────────────────
+function toggle(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('show');
+}
+
+// ── SAVE / LOAD ───────────────────────────────────────────────────────────────
+function getAll(){
+  const d={};
+  document.querySelectorAll('input[type=text],input[type=date],textarea,input:not([type])').forEach(el=>{
+    if(el.id)d[el.id]=el.value;
+  });
+  return d;
+}
+function saveAll(){
+  localStorage.setItem('cs0478_units_answers',JSON.stringify(getAll()));
+}
+function loadSaved(){
+  try{
+    const raw=localStorage.getItem('cs0478_units_answers');
+    if(!raw)return;
+    const d=JSON.parse(raw);
+    Object.entries(d).forEach(([id,val])=>{
+      const el=document.getElementById(id);
+      if(el)el.value=val;
+    });
+  }catch(e){}
+}
+
+// auto-bind save
+document.addEventListener('input',saveAll);
+
+// set date
+const sd=document.getElementById('s-date');
+if(sd&&!sd.value)sd.value=new Date().toISOString().split('T')[0];
+loadSaved();
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let _tt;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2500);
+}
+setInterval(()=>{saveAll();showToast('Progress auto-saved ✓');},30000);
+
+// ── SUBMIT ────────────────────────────────────────────────────────────────────
+function buildBody(){
+  const d=getAll();
+  const name=d['s-name']||'(blank)';
+  const cls=d['s-class']||'(blank)';
+  const date=d['s-date']||'(blank)';
+
+  let b=`## Submission — Units & Data Representation\n`;
+  b+=`**Name:** ${name}  \n**Class:** ${cls}  \n**Date:** ${date}\n\n---\n\n`;
+
+  const secs=[
+    ['§1 Storage Units',['u1_1','u1_2','u1_3','u1_4','u1_5','u2_1','u2_2','u3_1','u3_2','u3_3']],
+    ['§2 Converting Units',['cv1','cv1w','cv2','cv2w','cv3','cv3w','cv4','cv4w','cv5','cv5w','cv6','cv6w','cv7','cv7w','cv8','cv8w','cv9','cv9w','cv10','cv10w','cv_usb','cv11','cv12','cv13','cv14a','cv14b','cv14c','cv14d']],
+    ['§3 Text',['t1_1','t1_2','t1_3','t1_4','t2_count_a','t2_bytes_a','t2_b','t3_count','t3_bytes','t3_poem','t3_explain','enc1_n','enc1_a','enc1_u16','enc1_u32','enc2_n','enc2_a','enc2_u16','enc2_u32','enc3_a','enc3_u16','enc3_u32','t4_ext']],
+    ['§4 Images',['img1_bpp','img1_b','img1_kib','img2_bpp','img2_b','img2_kib','img3_bpp','img3_b','img3_kib','img_q128','cr1','cr2','cr3','cr_ext','ps1','ps2','ps3','ps4','img4a','img4b','img4c']],
+    ['§5 Sound',['s1_1','s1_2','s1_3','s1_4','aud1_b','aud1_m','aud2_b','aud2_m','aud3_b','aud3_m','s2_quad','tr1','tr2','tr3','aud4a','aud4b','aud4c','aud4d']],
+    ['§6 Revision',['rv_bit','rv_kib','rv_px','rv_sr','rv_bdi','rv_bda','rv_uni','rv_cd','rv1','rv2','rv3','rv4','rv5','rv6','sc1_a_kib','sc1_a_mib','sc1_b_b','sc1_b_kib','sc1_c_b','sc1_c_kib','sc1_c_mib','sc1_b_explain','sc2a','sc2b','sc2c','sc3a','sc3b','sc4a','sc4b','qf1','qf2','qf3','qf4','qf5','qf6','qf7','qf8']],
+  ];
+
+  secs.forEach(([title,ids])=>{
+    b+=`### ${title}\n\n`;
+    ids.forEach(id=>{
+      const v=d[id]||'_(blank)_';
+      if(v!=='_(blank)_') b+=`**${id}:** ${v}\n\n`;
+    });
+    b+='\n---\n\n';
+  });
+  return b;
+}
+
+function submitGH(){
+  const d=getAll();
+  const name=d['s-name']||'Student';
+  const cls=d['s-class']||'';
+  const title=encodeURIComponent(`[Submission] ${name} ${cls} — Units & Data Representation`);
+  const body=encodeURIComponent(buildBody());
+  // ── CHANGE THIS to your GitHub repo ──
+  const repo='https://github.com/YOUR-USERNAME/YOUR-REPO/issues/new';
+  window.open(`${repo}?title=${title}&body=${body}&labels=submission`,'_blank');
+}
+
+function dlAnswers(){
+  const d=getAll();
+  let txt=`IGCSE CS 0478 — Units & Data Representation\nName: ${d['s-name']||''}\nClass: ${d['s-class']||''}\nDate: ${d['s-date']||''}\n\n${'='.repeat(60)}\n\n`;
+  Object.entries(d).forEach(([k,v])=>{
+    if(v&&!['s-name','s-class','s-date'].includes(k))txt+=`[${k}]\n${v}\n\n`;
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download=`${(d['s-name']||'student').replace(/\s+/g,'_')}_CS0478_Units.txt`;
+  a.click();
+}
+</script>
+</body>
+</html>
